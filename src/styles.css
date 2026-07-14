@@ -143,6 +143,7 @@ footer {
 
 .pokemon-ability {
   flex: 1;
+  text-align: center;
 }
 
 .pokemon-ability-type {
