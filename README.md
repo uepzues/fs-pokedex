@@ -15,5 +15,3 @@ Start by running `npm install` inside the project folder
 ## Link to deployed app (Render)
 
 https://fs-pokedex-z9hg.onrender.com
-
-Skipping a commit for tagging and deployment test
