@@ -50,6 +50,8 @@ jobs:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' }}
+    permissions: 
+      contents: write
     steps:
       - uses: actions/checkout@v6
         with: 
@@ -58,5 +60,5 @@ jobs:
         uses: anothrNick/github-tag-action@1.75.0
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DRY_RUN: true
+          DRY_RUN: false
           DEFAULT_BUMP: patch
