@@ -42,7 +42,7 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 5
-          
+
   deploy:
     if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' ; '), '#skip')}}
     needs: [build_and_test]
@@ -67,3 +67,48 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DRY_RUN: false
           DEFAULT_BUMP: patch
+
+  notification_success:
+    needs: [build_and_test, deploy, tag_releases]
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send success notification
+        uses: sarisia/actions-status-discord@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_TITLE: 'Deployment Successful!'
+          DISCORD_COLOR: ${{ job.status }}
+          DISCORD_DESCRIPTION: |
+            A new version `${{ github.event.release.tag_name }}` has been deployed to Render.
+
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Author: ${{ github.actor }}
+
+            Workflow Run:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+  notification-failure:
+    if: ${{ failure() }}
+    needs: [build_and_test, deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deployment Failed
+        uses: sarisia/actions-status-discord@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_TITLE: 'Deployment Pipeline Failed'
+          DISCORD_COLOR: ${{ job.status }}
+          DISCORD_DESCRIPTION: |
+            The deployment pipeline failed.
+
+            Repository: ${{ github.repository }}
+            Commit: ${{ github.sha }}
+            Triggered by: ${{ github.actor }}
+
+            Workflow:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
