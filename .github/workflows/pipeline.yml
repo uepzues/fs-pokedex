@@ -70,7 +70,7 @@ jobs:
 
   notification_success:
     needs: [build_and_test, deploy, tag_releases]
-    if: success()
+    if: ${{ success() }}
     runs-on: ubuntu-latest
     steps:
       - name: Send success notification
@@ -104,7 +104,7 @@ jobs:
           DISCORD_TITLE: 'Deployment Pipeline Failed'
           DISCORD_COLOR: ${{ job.status }}
           DISCORD_DESCRIPTION: |
-            The deployment pipeline failed.
+            The build failed.
 
             Repository: ${{ github.repository }}
             Commit: ${{ github.sha }}
