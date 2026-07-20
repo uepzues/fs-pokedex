@@ -70,7 +70,7 @@ jobs:
 
   notification_success:
     needs: [build_and_test, deploy, tag_releases]
-    if: ${{ success() }}
+    if: ${{ success() && github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' ; '), '#skip') }}
     runs-on: ubuntu-latest
     steps:
       - name: Send success notification
@@ -92,7 +92,7 @@ jobs:
             ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
   notification-failure:
-    if: ${{ failure() }}
+    if: ${{ always() && failure() }}
     needs: [build_and_test, deploy]
     runs-on: ubuntu-latest
     steps:
