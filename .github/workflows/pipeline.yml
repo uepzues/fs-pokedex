@@ -28,7 +28,7 @@ jobs:
 
   notification_success:
     needs: [build_and_test, deploy, tag_releases]
-    if: success()
+    if: ${{ success() && github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' ; '), '#skip') }}
     uses: ./.github/workflows/notify.yml
     with:
       title: 'Deployment Successful!'
@@ -48,7 +48,7 @@ jobs:
 
   notification-failure:
     needs: [build_and_test, deploy]
-    if: failure()
+    if: ${{ always() && failure() }}
     uses: ./.github/workflows/notify.yml
     with:
       title: 'Deployment Pipeline Failed'
