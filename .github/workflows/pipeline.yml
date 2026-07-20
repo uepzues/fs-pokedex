@@ -9,7 +9,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  simple_deployment_pipeline:
+  build_and_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -42,13 +42,17 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 5
-
+          
+  deploy:
+    if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' ; '), '#skip')}}
+    needs: [build_and_test]
+    runs-on: ubuntu-latest
+    steps:
       - name: Trigger deployment
-        if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' ; '), '#skip')}}
         run: curl ${{secrets.RENDER_DEPLOY_HOOK}}
 
   tag_releases:
-    needs: [simple_deployment_pipeline]
+    needs: [deploy]
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' ; '), '#skip')}}
     permissions:
