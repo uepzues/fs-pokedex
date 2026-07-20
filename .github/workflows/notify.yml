@@ -1,0 +1,30 @@
+name: Discord Notification
+
+on:
+  workflow_call:
+    inputs:
+      title:
+        required: true
+        type: string
+      color:
+        required: true
+        type: string
+      description:
+        required: true
+        type: string
+    secrets:
+      DISCORD_WEBHOOK:
+        required: true
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send notification
+        uses: sarisia/actions-status-discord@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_TITLE: ${{ inputs.title }}
+          DISCORD_COLOR: ${{ inputs.color }}
+          DISCORD_DESCRIPTION: ${{ inputs.description }}

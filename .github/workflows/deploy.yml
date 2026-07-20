@@ -1,0 +1,14 @@
+name: Deploy
+
+on:
+  workflow_call:
+    secrets:
+      RENDER_DEPLOY_HOOK:
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger deployment
+        run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
