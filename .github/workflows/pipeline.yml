@@ -44,8 +44,8 @@ jobs:
           retention-days: 5
 
   deploy:
-    if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' ; '), '#skip')}}
     needs: [build_and_test]
+    if: ${{ github.event_name == 'push' && !contains(join(github.event.commits.*.message, ' ; '), '#skip')}}
     runs-on: ubuntu-latest
     steps:
       - name: Trigger deployment
@@ -69,7 +69,7 @@ jobs:
           DEFAULT_BUMP: patch
 
   notification_success:
-    needs: [deploy]
+    needs: [build_and_test, deploy]
     if: ${{ success() }}
     runs-on: ubuntu-latest
     steps:
@@ -77,8 +77,6 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          status: ${{ job.status }}
-          title: Deployment Successful
 
   notification_failure:
     needs: [build_and_test, deploy]
