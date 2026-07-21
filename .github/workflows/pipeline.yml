@@ -87,14 +87,10 @@ jobs:
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          status: ${{ job.status }}
           title: Deployment Failed
+          status: failure
+          color: 0xff0000
           description: |
             The build failed.
 
-            Repository: ${{ github.repository }}
             Commit: ${{ github.sha }}
-            Triggered by: ${{ github.actor }}
-
-            Workflow:
-            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
